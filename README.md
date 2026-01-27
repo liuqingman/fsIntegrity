@@ -16,96 +16,99 @@
  
 ## 目录
 
-- [上手指南](#上手指南)
   - [开发前的配置要求](#开发前的配置要求)
   - [安装步骤](#安装步骤)
 - [文件目录说明](#文件目录说明)
 - [开发的架构](#开发的架构)
 - [部署](#部署)
 - [使用到的框架](#使用到的框架)
+- [详细说明](#详细说明)
+- [性能对比数据参考](#性能对比数据参考)
 - [贡献者](#贡献者)
   - [如何参与开源项目](#如何参与开源项目)
 - [版本控制](#版本控制)
 - [作者](#作者)
 - [鸣谢](#鸣谢)
 
-### 上手指南
-
-请将所有链接中的“shaojintian/Best_README_template”改为“your_github_name/your_repository”
-
 
 
 ###### 开发前的配置要求
 
-1. xxxxx x.x.x
-2. xxxxx x.x.x
+待补充
 
 ###### **安装步骤**
 
-1. Get a free API Key at [https://example.com](https://example.com)
-2. Clone the repo
-
-```sh
-git clone https://github.com/shaojintian/Best_README_template.git
-```
+待补充
 
 ### 文件目录说明
 eg:
 
 ```
-filetree 
-├── ARCHITECTURE.md
-├── LICENSE.txt
-├── README.md
-├── /account/
-├── /bbs/
-├── /docs/
-│  ├── /rules/
-│  │  ├── backend.txt
-│  │  └── frontend.txt
-├── manage.py
-├── /oa/
-├── /static/
-├── /templates/
-├── useless.md
-└── /util/
+fsIntegrity/
+├── integrity_fuse_fs.c   # 主程序源代码
+├── README.md             # 项目说明文档
+├── examples/             # 示例和测试脚本
+│   ├── test_integrity.sh # 完整性测试脚本
+│   └── benchmark.sh      # 性能测试脚本
+└── LICENSE               # 许可证文件
 
 ```
 
+## 详细说明
+### fsverity
+- **优点**：性能最佳，特别适合大文件的部分读取场景
+- **缺点**：写入操作复杂，需要复制文件并重新启用校验
+- **适用场景**：只读或很少修改的大文件，如系统镜像、容器镜像等
 
+### ima+selinux
+- **优点**：与Linux安全模块深度集成，支持灵活的策略配置
+- **缺点**：需要内核支持和复杂的策略配置，写入后需要重新签名
+- **适用场景**：需要与SELinux策略集成的企业安全环境
+  
+### fsIntegrity (自研FUSE模块)
+- **优点**：
+  - 用户空间实现，无需内核修改
+  - 配置简单，部署灵活
+  - 支持透明的读写校验
+  - 跨平台兼容性好
+- **缺点**：
+  - FUSE层性能开销
+  - 大文件全量哈希计算开销
+- **适用场景**：
+  - 需要快速部署的完整性保护
+  - 非Linux平台或旧内核系统
+  - 中小文件为主的场景
+  - 开发和测试环境
 
+## 性能对比数据参考
 
+| 文件大小 | fsverity | ima+selinux | fsIntegrity |
+|----------|----------|-------------|-------------|
+| 1KB | 0.1ms | 0.2ms | 0.2ms |
+| 1MB | 0.5ms | 5ms | 5ms |
+| 100MB | 5ms | 500ms | 500ms |
+| 1GB (读取10MB) | 10ms | 5s | 5s |
+
+*注：以上为理论参考值，实际性能受硬件、系统负载等因素影响*
 
 ### 开发的架构 
 
-请阅读[ARCHITECTURE.md](https://github.com/shaojintian/Best_README_template/blob/master/ARCHITECTURE.md) 查阅为该项目的架构。
+基于fuse开发，fuse官方项目：https://github.com/libfuse/libfuse。
 
 ### 部署
 
-暂无
+```
+# 在前台运行并查看日志
+./integrityfs /data /mnt/integrity -f 2>&1 | tee fs.log
+```
 
-### 使用到的框架
-
-- [xxxxxxx](https://getbootstrap.com)
-- [xxxxxxx](https://jquery.com)
-- [xxxxxxx](https://laravel.com)
 
 ### 贡献者
 
-请阅读**CONTRIBUTING.md** 查阅为该项目做出贡献的开发者。
 
 #### 如何参与开源项目
 
 贡献使开源社区成为一个学习、激励和创造的绝佳场所。你所作的任何贡献都是**非常感谢**的。
-
-
-1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the Branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-
 
 ### 版本控制
 
@@ -113,14 +116,9 @@ filetree
 
 ### 作者
 
-xxx@xxxx
-
-知乎:xxxx  &ensp; qq:xxxxxx    
-
- *您也可以在贡献者名单中参看所有参与该项目的开发者。*
 
 ### 版权说明
 
-该项目签署了MIT 授权许可，详情请参阅 [LICENSE.txt](https://github.com/shaojintian/Best_README_template/blob/master/LICENSE.txt)
+该项目签署了MIT 授权许可，详情请参阅 [LICENSE.txt](https://github.com/liuqingman/fsIntegrity/blob/main/LICENSE.txt)
 
 ### 鸣谢
