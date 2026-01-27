@@ -1,19 +1,8 @@
 
 
-# fsIntegrity
+# FUSE Integrity Filesystem
+一个基于FUSE的文件完整性校验文件系统，为现有文件系统（如ext4）提供透明化的文件完整性保护。
 
-ProjectName and Description
-
-<!-- PROJECT SHIELDS -->
-
-[![Contributors][contributors-shield]][contributors-url]
-[![Forks][forks-shield]][forks-url]
-[![Stargazers][stars-shield]][stars-url]
-[![Issues][issues-shield]][issues-url]
-[![MIT License][license-shield]][license-url]
-[![LinkedIn][linkedin-shield]][linkedin-url]
-
-<!-- PROJECT LOGO -->
 <br />
 
 
